@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Mail, Phone, Instagram, MapPin, User } from 'lucide-react';
+import { Mail, Phone, Instagram, MapPin, User, Github, Linkedin } from 'lucide-react';
 import RevealWrapper from '../components/RevealWrapper';
 import api from '../hooks/useApi';
 
@@ -31,13 +31,17 @@ export default function AboutSection() {
               {/* Profile placeholder */}
               <div className="relative w-64 h-64 mx-auto md:mx-0 rounded-2xl bg-ink-800 border border-ink-700 overflow-hidden">
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="w-24 h-24 rounded-full bg-gold/10 border-2 border-gold/30 flex items-center justify-center mx-auto mb-4">
-                      <User size={40} className="text-gold/60" />
+                  {about?.photo_url ? (
+                    <img src={about.photo_url.startsWith('http') ? about.photo_url : `http://localhost:5000${about.photo_url}`} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="text-center">
+                      <div className="w-24 h-24 rounded-full bg-gold/10 border-2 border-gold/30 flex items-center justify-center mx-auto mb-4">
+                        <User size={40} className="text-gold/60" />
+                      </div>
+                      <p className="font-display text-ink-300 text-lg">Hayden</p>
+                      <p className="font-mono text-xs text-ink-600">@hxy.dn</p>
                     </div>
-                    <p className="font-display text-ink-300 text-lg">Hayden</p>
-                    <p className="font-mono text-xs text-ink-600">@hxy.dn</p>
-                  </div>
+                  )}
                 </div>
                 {/* Corner accents */}
                 <div className="absolute top-3 left-3 w-5 h-5 border-t border-l border-gold/50" />
@@ -77,9 +81,11 @@ export default function AboutSection() {
               {/* Contact chips */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                 {[
-                  { icon: Mail, label: about?.email || 'hayden.novariyo@gmail.com', href: `mailto:${about?.email}` },
+                  { icon: Mail, label: about?.email || 'hayden.novariyo@gmail.com', href: `mailto:${about?.email || 'hayden.novariyo@gmail.com'}` },
                   { icon: Instagram, label: about?.instagram || '@hxy.dn', href: 'https://instagram.com/hxy.dn' },
-                  { icon: Phone, label: about?.phone || '082143724101', href: `tel:${about?.phone}` },
+                  { icon: Linkedin, label: 'LinkedIn', href: 'https://www.linkedin.com/in/hayden-novariyo-wira-alfisyahr-562b07325' },
+                  { icon: Github, label: 'GitHub', href: 'https://github.com/CikiT4' },
+                  { icon: Phone, label: about?.phone || '082143724101', href: `tel:${about?.phone || '082143724101'}` },
                   { icon: MapPin, label: about?.location || 'Malang, Jawa Timur', href: null },
                 ].map(({ icon: Icon, label, href }) => (
                   <div key={label} className="flex items-center gap-2.5 bg-ink-800/50 border border-ink-700/50 rounded-lg px-3 py-2.5">

@@ -10,12 +10,12 @@
   html {
     scroll-behavior: smooth;
     scrollbar-width: thin;
-    scrollbar-color: #C9A84C #0E0E0E;
+    scrollbar-color: #8B4332 #EAE1D9;
   }
 
   ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: #0E0E0E; }
-  ::-webkit-scrollbar-thumb { background: #C9A84C; border-radius: 2px; }
+  ::-webkit-scrollbar-track { background: #EAE1D9; }
+  ::-webkit-scrollbar-thumb { background: #8B4332; border-radius: 2px; }
 
   body {
     @apply bg-ink-950 text-ink-100 font-sans antialiased;
@@ -23,8 +23,8 @@
   }
 
   ::selection {
-    background: rgba(201, 168, 76, 0.3);
-    color: #E2C278;
+    background: rgba(139, 67, 50, 0.3);
+    color: #A35441;
   }
 }
 
@@ -46,7 +46,9 @@
 
   .card-hover {
     @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
-    hover-shadow-color: rgba(201, 168, 76, 0.1);
+  }
+  .card-hover:hover {
+    box-shadow: 0 10px 30px rgba(139, 67, 50, 0.15);
   }
 
   .skill-bar {
@@ -123,10 +125,10 @@
   position: fixed;
   width: 6px;
   height: 6px;
-  background: #C9A84C;
+  background: #8B4332;
   border-radius: 50%;
   pointer-events: none;
   z-index: 9999;
   transition: transform 0.1s ease;
-  mix-blend-mode: screen;
+  mix-blend-mode: multiply;
 }

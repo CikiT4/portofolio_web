@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { Send, Mail, Instagram, MapPin } from 'lucide-react';
+import { Mail, Instagram, MapPin, MessageCircle } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import RevealWrapper from '../components/RevealWrapper';
-import api from '../hooks/useApi';
 
 export default function ContactSection() {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
@@ -18,22 +17,20 @@ export default function ContactSection() {
     return e;
   };
 
-  const handleSubmit = async (e) => {
+  const handleWhatsapp = (e) => {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length) { setErrors(errs); return; }
-    setErrors({});
-    setLoading(true);
-    try {
-      await api.post('/contact', form);
-      toast.success('Message sent! I\'ll get back to you soon.');
-      setForm({ name: '', email: '', subject: '', message: '' });
-    } catch (err) {
-      const msg = err.response?.data?.message || 'Failed to send message. Please try again.';
-      toast.error(msg);
-    } finally {
-      setLoading(false);
-    }
+    const text = `Hello! My name is ${form.name} (${form.email}).\nSubject: ${form.subject}\n\n${form.message}`;
+    window.open(`https://wa.me/6282143724101?text=${encodeURIComponent(text)}`, '_blank');
+  };
+
+  const handleEmail = (e) => {
+    e.preventDefault();
+    const errs = validate();
+    if (Object.keys(errs).length) { setErrors(errs); return; }
+    const body = `Hello! My name is ${form.name} (${form.email}).\n\n${form.message}`;
+    window.location.href = `mailto:hayden.novariyo@gmail.com?subject=${encodeURIComponent(form.subject)}&body=${encodeURIComponent(body)}`;
   };
 
   const handleChange = (field) => (e) => {
@@ -94,7 +91,7 @@ export default function ContactSection() {
 
           {/* Form */}
           <RevealWrapper delay={200}>
-            <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+            <form onSubmit={(e) => e.preventDefault()} className="space-y-5" noValidate>
               <div className="grid sm:grid-cols-2 gap-5">
                 <div>
                   <label htmlFor="contact-name" className="block font-mono text-xs tracking-widest text-ink-500 uppercase mb-2">Name *</label>
@@ -156,18 +153,24 @@ export default function ContactSection() {
                 <InputError field="message" />
               </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full flex items-center justify-center gap-2 admin-btn-primary py-4 text-base rounded-xl"
-              >
-                {loading ? (
-                  <span className="animate-spin w-4 h-4 border-2 border-ink-950/30 border-t-ink-950 rounded-full" />
-                ) : (
-                  <Send size={16} />
-                )}
-                {loading ? 'Sending...' : 'Send Message'}
-              </button>
+              <div className="flex flex-col sm:flex-row gap-4 pt-2">
+                <button
+                  type="button"
+                  onClick={handleWhatsapp}
+                  className="flex-1 flex items-center justify-center gap-2 admin-btn-primary py-4 text-sm rounded-xl !bg-green-600 hover:!bg-green-500 !text-white"
+                >
+                  <MessageCircle size={16} />
+                  Send via WhatsApp
+                </button>
+                <button
+                  type="button"
+                  onClick={handleEmail}
+                  className="flex-1 flex items-center justify-center gap-2 admin-btn-primary py-4 text-sm rounded-xl"
+                >
+                  <Mail size={16} />
+                  Send via Email
+                </button>
+              </div>
             </form>
           </RevealWrapper>
         </div>

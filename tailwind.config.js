@@ -5,27 +5,27 @@ export default {
     extend: {
       colors: {
         ink: {
-          950: '#080808',
-          900: '#0E0E0E',
-          800: '#161616',
-          700: '#1F1F1F',
-          600: '#2A2A2A',
-          500: '#383838',
-          400: '#555555',
-          300: '#888888',
-          200: '#BBBBBB',
-          100: '#E8E8E8',
+          950: '#F5EFEB',  // Lightest beige (Main background)
+          900: '#EAE1D9',  // Secondary background
+          800: '#E1D7CD',  // Cards / Sections
+          700: '#D1C4B8',
+          600: '#BCAFA4',
+          500: '#A4968C',
+          400: '#8A7B72',  // Subtext
+          300: '#605147',  // Main readable text
+          200: '#42362E',
+          100: '#2D231E',  // Darkest text / headings
         },
         gold: {
-          DEFAULT: '#C9A84C',
-          light: '#E2C278',
-          dark: '#A07830',
-          muted: 'rgba(201,168,76,0.15)',
+          DEFAULT: '#8B4332',      // Reddish brown main accent
+          light: '#A35441',
+          dark: '#6E3224',
+          muted: 'rgba(139, 67, 50, 0.15)',
         }
       },
       fontFamily: {
-        display: ['"Cormorant Garamond"', 'Georgia', 'serif'],
-        sans: ['"DM Sans"', 'system-ui', 'sans-serif'],
+        display: ['"Helvetica"', 'Arial', 'sans-serif'],
+        sans: ['"Helvetica"', 'Arial', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'monospace'],
       },
       animation: {

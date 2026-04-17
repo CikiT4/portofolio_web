@@ -26,6 +26,7 @@ app.use('/api/education', require('./routes/education'));
 app.use('/api/organizations', require('./routes/organizations'));
 app.use('/api/faqs', require('./routes/faqs'));
 app.use('/api/contact', require('./routes/contact'));
+app.use('/api/upload', require('./routes/upload'));
 
 // Health check
 app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));

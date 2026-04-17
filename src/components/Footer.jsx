@@ -1,5 +1,5 @@
 import React from 'react';
-import { Instagram, Mail, Phone } from 'lucide-react';
+import { Instagram, Mail, Phone, Github, Linkedin } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -31,7 +31,27 @@ export default function Footer() {
               <Instagram size={16} />
             </a>
             <a
-              href="tel:082143724101"
+              href="https://www.linkedin.com/in/hayden-novariyo-wira-alfisyahr-562b07325"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-9 h-9 flex items-center justify-center rounded-lg border border-ink-700 text-ink-400 hover:text-gold hover:border-gold/40 transition-all duration-200"
+              aria-label="LinkedIn"
+            >
+              <Linkedin size={16} />
+            </a>
+            <a
+              href="https://github.com/CikiT4"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-9 h-9 flex items-center justify-center rounded-lg border border-ink-700 text-ink-400 hover:text-gold hover:border-gold/40 transition-all duration-200"
+              aria-label="GitHub"
+            >
+              <Github size={16} />
+            </a>
+            <a
+              href="https://wa.me/6282143724101"
+              target="_blank"
+              rel="noopener noreferrer"
               className="w-9 h-9 flex items-center justify-center rounded-lg border border-ink-700 text-ink-400 hover:text-gold hover:border-gold/40 transition-all duration-200"
               aria-label="Phone"
             >
