@@ -3,22 +3,36 @@ const router = express.Router();
 const db = require('../db');
 const auth = require('../middleware/auth');
 
-router.get('/', (req, res) => {
-  const hero = db.prepare('SELECT * FROM hero LIMIT 1').get();
-  if (!hero) return res.status(404).json({ error: 'not_found', message: 'Hero not found' });
-  res.json(hero);
+router.get('/', async (req, res) => {
+  try {
+    const [rows] = await db.execute('SELECT * FROM hero LIMIT 1');
+    if (rows.length === 0) return res.status(404).json({ error: 'not_found', message: 'Hero not found' });
+    res.json(rows[0]);
+  } catch (error) {
+    res.status(500).json({ error: 'server_error', message: error.message });
+  }
 });
 
-router.put('/', auth, (req, res) => {
+router.put('/', auth, async (req, res) => {
   const { title, subtitle, tagline, cta_text } = req.body;
-  const existing = db.prepare('SELECT id FROM hero LIMIT 1').get();
-  if (existing) {
-    db.prepare('UPDATE hero SET title=?, subtitle=?, tagline=?, cta_text=?, updated_at=datetime(\'now\') WHERE id=?')
-      .run(title, subtitle, tagline, cta_text, existing.id);
-  } else {
-    db.prepare('INSERT INTO hero (title, subtitle, tagline, cta_text) VALUES (?, ?, ?, ?)').run(title, subtitle, tagline, cta_text);
+  try {
+    const [existingRows] = await db.execute('SELECT id FROM hero LIMIT 1');
+    if (existingRows.length > 0) {
+      await db.execute(
+        'UPDATE hero SET title=?, subtitle=?, tagline=?, cta_text=? WHERE id=?',
+        [title, subtitle, tagline, cta_text, existingRows[0].id]
+      );
+    } else {
+      await db.execute(
+        'INSERT INTO hero (title, subtitle, tagline, cta_text) VALUES (?, ?, ?, ?)',
+        [title, subtitle, tagline, cta_text]
+      );
+    }
+    const [updatedHero] = await db.execute('SELECT * FROM hero LIMIT 1');
+    res.json(updatedHero[0]);
+  } catch (error) {
+    res.status(500).json({ error: 'server_error', message: error.message });
   }
-  res.json(db.prepare('SELECT * FROM hero LIMIT 1').get());
 });
 
 module.exports = router;

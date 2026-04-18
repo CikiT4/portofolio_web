@@ -3,22 +3,36 @@ const router = express.Router();
 const db = require('../db');
 const auth = require('../middleware/auth');
 
-router.get('/', (req, res) => {
-  const about = db.prepare('SELECT * FROM about LIMIT 1').get();
-  if (!about) return res.status(404).json({ error: 'not_found', message: 'About not found' });
-  res.json(about);
+router.get('/', async (req, res) => {
+  try {
+    const [rows] = await db.execute('SELECT * FROM about LIMIT 1');
+    if (rows.length === 0) return res.status(404).json({ error: 'not_found', message: 'About not found' });
+    res.json(rows[0]);
+  } catch (error) {
+    res.status(500).json({ error: 'server_error', message: error.message });
+  }
 });
 
-router.put('/', auth, (req, res) => {
+router.put('/', auth, async (req, res) => {
   const { name, role, bio, email, phone, instagram, location, photo_url } = req.body;
-  const existing = db.prepare('SELECT id FROM about LIMIT 1').get();
-  if (existing) {
-    db.prepare('UPDATE about SET name=?, role=?, bio=?, email=?, phone=?, instagram=?, location=?, photo_url=?, updated_at=datetime(\'now\') WHERE id=?')
-      .run(name, role, bio, email, phone, instagram, location, photo_url, existing.id);
-  } else {
-    db.prepare('INSERT INTO about (name, role, bio, email, phone, instagram, location, photo_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').run(name, role, bio, email, phone, instagram, location, photo_url);
+  try {
+    const [existingRows] = await db.execute('SELECT id FROM about LIMIT 1');
+    if (existingRows.length > 0) {
+      await db.execute(
+        'UPDATE about SET name=?, role=?, bio=?, email=?, phone=?, instagram=?, location=?, photo_url=? WHERE id=?',
+        [name, role, bio, email, phone, instagram, location, photo_url, existingRows[0].id]
+      );
+    } else {
+      await db.execute(
+        'INSERT INTO about (name, role, bio, email, phone, instagram, location, photo_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        [name, role, bio, email, phone, instagram, location, photo_url]
+      );
+    }
+    const [result] = await db.execute('SELECT * FROM about LIMIT 1');
+    res.json(result[0]);
+  } catch (error) {
+    res.status(500).json({ error: 'server_error', message: error.message });
   }
-  res.json(db.prepare('SELECT * FROM about LIMIT 1').get());
 });
 
 module.exports = router;

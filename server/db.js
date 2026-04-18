@@ -1,124 +1,162 @@
-const Database = require('better-sqlite3');
-const path = require('path');
-const fs = require('fs');
+const mysql = require('mysql2/promise');
+require('dotenv').config();
 
-const DB_PATH = path.join(__dirname, 'portfolio.db');
-const db = new Database(DB_PATH);
+const pool = mysql.createPool({
+  host: process.env.DB_HOST || 'localhost',
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || '',
+  database: process.env.DB_NAME || 'porto_web',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+});
 
-// Enable WAL mode for better performance
-db.pragma('journal_mode = WAL');
-db.pragma('foreign_keys = ON');
+// Initialize database tables if they don't exist
+async function initDB() {
+  try {
+    console.log('⏳ Connecting to MySQL and initializing tables...');
+    
+    // Create tables
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        username VARCHAR(255) NOT NULL UNIQUE,
+        password_hash VARCHAR(255) NOT NULL,
+        role VARCHAR(50) NOT NULL DEFAULT 'admin',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
 
-// ── Schema Migrations ──────────────────────────────────────────────
-db.exec(`
-  CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT NOT NULL UNIQUE,
-    password_hash TEXT NOT NULL,
-    role TEXT NOT NULL DEFAULT 'admin',
-    created_at TEXT DEFAULT (datetime('now'))
-  );
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS hero (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        subtitle VARCHAR(255) NOT NULL,
+        tagline TEXT,
+        cta_text VARCHAR(255) DEFAULT 'View My Work',
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      )
+    `);
 
-  CREATE TABLE IF NOT EXISTS hero (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT NOT NULL,
-    subtitle TEXT NOT NULL,
-    tagline TEXT,
-    cta_text TEXT DEFAULT 'View My Work',
-    updated_at TEXT DEFAULT (datetime('now'))
-  );
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS about (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        role VARCHAR(255) NOT NULL,
+        bio TEXT NOT NULL,
+        email VARCHAR(255),
+        phone VARCHAR(50),
+        instagram VARCHAR(100),
+        location VARCHAR(255),
+        photo_url TEXT,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      )
+    `);
 
-  CREATE TABLE IF NOT EXISTS about (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    role TEXT NOT NULL,
-    bio TEXT NOT NULL,
-    email TEXT,
-    phone TEXT,
-    instagram TEXT,
-    location TEXT,
-    photo_url TEXT,
-    updated_at TEXT DEFAULT (datetime('now'))
-  );
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS experiences (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        company VARCHAR(255) NOT NULL,
+        start_date VARCHAR(100) NOT NULL,
+        end_date VARCHAR(100),
+        description TEXT NOT NULL,
+        tags TEXT,
+        sort_order INT DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
 
-  CREATE TABLE IF NOT EXISTS experiences (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT NOT NULL,
-    company TEXT NOT NULL,
-    start_date TEXT NOT NULL,
-    end_date TEXT,
-    description TEXT NOT NULL,
-    tags TEXT DEFAULT '[]',
-    sort_order INTEGER DEFAULT 0,
-    created_at TEXT DEFAULT (datetime('now'))
-  );
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS services (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        description TEXT NOT NULL,
+        icon VARCHAR(100) DEFAULT 'Star',
+        details TEXT,
+        sort_order INT DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
 
-  CREATE TABLE IF NOT EXISTS services (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    description TEXT NOT NULL,
-    icon TEXT DEFAULT 'Star',
-    details TEXT,
-    sort_order INTEGER DEFAULT 0,
-    created_at TEXT DEFAULT (datetime('now'))
-  );
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS skills (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        level INT NOT NULL,
+        category VARCHAR(100) DEFAULT 'general',
+        sort_order INT DEFAULT 0
+      )
+    `);
 
-  CREATE TABLE IF NOT EXISTS skills (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    level INTEGER NOT NULL CHECK(level >= 0 AND level <= 100),
-    category TEXT DEFAULT 'general',
-    sort_order INTEGER DEFAULT 0
-  );
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS stats (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        label VARCHAR(255) NOT NULL,
+        value INT NOT NULL,
+        suffix VARCHAR(20) DEFAULT '+',
+        icon VARCHAR(100) DEFAULT 'TrendingUp',
+        sort_order INT DEFAULT 0
+      )
+    `);
 
-  CREATE TABLE IF NOT EXISTS stats (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    label TEXT NOT NULL,
-    value INTEGER NOT NULL,
-    suffix TEXT DEFAULT '+',
-    icon TEXT DEFAULT 'TrendingUp',
-    sort_order INTEGER DEFAULT 0
-  );
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS education (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        institution VARCHAR(255) NOT NULL,
+        degree VARCHAR(255) NOT NULL,
+        field VARCHAR(255),
+        start_date VARCHAR(100) NOT NULL,
+        end_date VARCHAR(100),
+        description TEXT,
+        sort_order INT DEFAULT 0
+      )
+    `);
 
-  CREATE TABLE IF NOT EXISTS education (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    institution TEXT NOT NULL,
-    degree TEXT NOT NULL,
-    field TEXT,
-    start_date TEXT NOT NULL,
-    end_date TEXT,
-    description TEXT,
-    sort_order INTEGER DEFAULT 0
-  );
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS organizations (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        role VARCHAR(255) NOT NULL,
+        start_date VARCHAR(100),
+        end_date VARCHAR(100),
+        description TEXT,
+        bullets TEXT,
+        sort_order INT DEFAULT 0
+      )
+    `);
 
-  CREATE TABLE IF NOT EXISTS organizations (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    role TEXT NOT NULL,
-    start_date TEXT,
-    end_date TEXT,
-    description TEXT,
-    bullets TEXT DEFAULT '[]',
-    sort_order INTEGER DEFAULT 0
-  );
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS faqs (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        question VARCHAR(255) NOT NULL,
+        answer TEXT NOT NULL,
+        sort_order INT DEFAULT 0
+      )
+    `);
 
-  CREATE TABLE IF NOT EXISTS faqs (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    question TEXT NOT NULL,
-    answer TEXT NOT NULL,
-    sort_order INTEGER DEFAULT 0
-  );
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS contact_messages (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        subject VARCHAR(255),
+        message TEXT NOT NULL,
+        is_read TINYINT(1) DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
 
-  CREATE TABLE IF NOT EXISTS contact_messages (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    email TEXT NOT NULL,
-    subject TEXT,
-    message TEXT NOT NULL,
-    is_read INTEGER DEFAULT 0,
-    created_at TEXT DEFAULT (datetime('now'))
-  );
-`);
+    console.log('✅ MySQL Database and tables initialized.');
+  } catch (error) {
+    console.error('❌ Failed to initialize MySQL:', error.message);
+    if (error.code === 'ER_BAD_DB_ERROR') {
+      console.error('   Please create the database manually first: CREATE DATABASE portfolio_db;');
+    }
+  }
+}
 
-console.log('✅ Database initialized:', DB_PATH);
-module.exports = db;
+// Attach initDB to the pool so it can be awaited in the seeder
+pool.initDB = initDB;
+
+module.exports = pool;
