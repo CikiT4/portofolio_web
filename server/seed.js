@@ -7,14 +7,23 @@ async function seed() {
     // ── Create Tables ───────────────────────────────────────────────────
     await db.initDB();
 
-    // ── Admin User ──────────────────────────────────────────────────────
-    const [users] = await db.execute('SELECT id FROM users WHERE username = ?', ['admin']);
-    if (users.length === 0) {
+    // ── Users ───────────────────────────────────────────────────────────
+    // Admin
+    const [admins] = await db.execute('SELECT id FROM users WHERE username = ?', ['admin']);
+    if (admins.length === 0) {
       const hash = bcrypt.hashSync('hayden2024', 10);
       await db.execute('INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)', ['admin', hash, 'admin']);
       console.log('✅ Admin user created (username: admin / password: hayden2024)');
     } else {
       console.log('ℹ️ Admin user already exists');
+    }
+
+    // Regular User
+    const [users] = await db.execute('SELECT id FROM users WHERE username = ?', ['user']);
+    if (users.length === 0) {
+      const hash = bcrypt.hashSync('user2024', 10);
+      await db.execute('INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)', ['user', hash, 'user']);
+      console.log('✅ Regular user created (username: user / password: user2024)');
     }
 
     // ── Hero ────────────────────────────────────────────────────────────
@@ -55,13 +64,13 @@ async function seed() {
     // ── Work Experiences ────────────────────────────────────────────────
     await db.execute('DELETE FROM experiences');
     const expData = [
-      ['Event Coordinator', 'PremierPlus Organizer', 'May 2025', 'Present', 'Manage the event flow and on-site technical operations. Greeting guests, preparing event needs, and assisting attendees to ensure the wedding runs smoothly.', '["event","coordination","operations"]', 1],
-      ['Event Division & Partnership', 'GDG Binus Malang', 'October 2024', 'Present', 'Responsible for planning, organizing, and executing events. Handling partnerships and ensuring smooth event delivery.', '["event","partnership","gdg"]', 2],
-      ['Event Planner and Documentation', 'D3 Event Organizer', 'February 2024', 'Present', 'Capture important moments through photos and videos while overseeing the venue setup and seating.', '["planning","documentation","photography"]', 3],
-      ['(Media Partner) Live Report and Documentation', 'Event Sidoarjo', 'January 2024', 'Present', 'Storing all the event documentation for future use, such as for marketing or historical records.', '["media","documentation","live-report"]', 4],
-      ['Moderator', 'GDG Binus Malang', 'August 2024', 'August 2024', 'Managing the flow of the discussion between speakers or panelists, asking questions, and keeping the topics aligned.', '["moderation","public-speaking"]', 5],
-      ['Coordinator Documentation', 'SMK Telkom SDA', 'April 2024', 'April 2024', 'Responsible for overseeing and ensuring that all event-related information and materials are properly captured.', '["documentation","coordination"]', 6],
-      ['Livestreaming Team', 'Avepro (Freelancer)', 'June 2024', 'June 2024', 'Live broadcasting of the event to an online audience using professional streaming software.', '["livestream","broadcast","freelance"]', 7],
+      ['Event Coordinator', 'PremierPlus Organizer', 'May 2025', 'Present', 'Manage the event flow and on-site technical operations. Greeting guests, preparing event needs, and assisting attendees to ensure the wedding runs smoothly.', JSON.stringify(['event', 'coordination', 'operations']), 1],
+      ['Event Division & Partnership', 'GDG Binus Malang', 'October 2024', 'Present', 'Responsible for planning, organizing, and executing events. Events: Introduction in Laravel (Nov 2024), Dive into ML (Mar 2025), TFISC Pioneer (July 2025), TFISC Threads of Joy (Nov 2025).', JSON.stringify(['event', 'partnership', 'gdg']), 2],
+      ['Event Planner and Documentation', 'D3 Event Organizer', 'February 2024', 'Present', 'Capture important moments through photos and videos. Events: Unsur Festival (Feb 2024), Roasting Sidoarjo vol2 (May 2024), Kayoko no Fest (Upcoming).', JSON.stringify(['planning', 'documentation', 'photography']), 3],
+      ['(Media Partner) Live Report and Documentation', 'Event Sidoarjo', 'January 2024', 'Present', 'Storing all the event documentation for future use. Coverage: 8th Kampung Ramadhan, Peluncuran Pilgub Jatim 2024, PINKFOG BABY SHARK, Halumusicfestival, Kickfest, DPR Festival, Livearena, Onfest, Juicy Luicy (2025).', JSON.stringify(['media', 'documentation', 'live-report']), 4],
+      ['Moderator', 'GDG Binus Malang', 'August 2024', 'August 2024', 'Managing the flow of the discussion between speakers or panelists. Event: Introduction in Laravel GDG Binus Malang.', JSON.stringify(['moderation', 'public-speaking']), 5],
+      ['Coordinator Documentation', 'SMK Telkom SDA', 'April 2024', 'April 2024', 'Responsible for overseeing and ensuring that all event-related information and materials are properly captured. Project: Panitia Yearbook SMK Telkom SDA.', JSON.stringify(['documentation', 'coordination']), 6],
+      ['Livestreaming Team', 'Avepro (Freelancer)', 'June 2024', 'June 2024', 'Live broadcasting of the event to an online audience. Project: The Lion Best Youth Tournament Basketball.', JSON.stringify(['livestream', 'broadcast', 'freelance']), 7],
     ];
     for (const e of expData) {
       await db.execute('INSERT INTO experiences (title, company, start_date, end_date, description, tags, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?)', e);
@@ -72,11 +81,13 @@ async function seed() {
     await db.execute('DELETE FROM organizations');
     const orgData = [
       ['Weebs Entertainment', 'Community Leader, Photography', 'January 2023', 'Present', 'Managing Copyright and Licensing of Photos.', '["Leadership","Photography"]', 1],
-      ['D3 Event Organizer', 'Documentation and Event Planner', 'February 2024', 'Present', 'Creating a vision for the event and documenting the process.', '["Vision","Documentation"]', 2],
+      ['D3 Event Organizer', 'Documentation and Event Planner', 'February 2024', 'Present', 'Documenting the Event Process, creating vision for the event.', '["Vision","Documentation"]', 2],
       ['Event Sidoarjo', 'Content Creator, Live Reports', 'March 2024', 'Present', 'Keeping an eye on industry trends and live coverage of important events.', '["Content","Trends"]', 3],
       ['TFI Student Community', 'Partnership', 'January 2025', 'Present', 'Setting up and agreeing upon partnership agreements.', '["Partnership","Contract"]', 4],
       ['Google Developer Groups Binus Malang', 'Manager Product & Curriculum', 'October 2024', 'Present', 'Searching for materials and ideas for the event and finding speakers.', '["Materials","Speakers"]', 5],
       ['Panorama Binus Malang', 'HOD Press Corps', 'October 2024', 'Present', 'Providing live updates to engage the audience in real-time.', '["Live","Engagement"]', 6],
+      ['Avepro (Freelancer)', 'Livestreaming Team', 'June 2024', 'June 2024', 'Operating live streaming software or platforms (YouTube Live, FB Live, Zoom) to broadcast events.', '["Livestreaming","Freelance"]', 7],
+      ['PremierPlus Organizer', 'Event Coordinator', 'May 2025', 'Present', 'Greeting guests, preparing event needs, and assisting attendees.', '["Event","Coordinator"]', 8],
     ];
     for (const o of orgData) {
       await db.execute('INSERT INTO organizations (name, role, start_date, end_date, description, bullets, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?)', o);
@@ -100,7 +111,7 @@ async function seed() {
     await db.execute('DELETE FROM skills');
     const skillData = [
       ['Communication Skills', 95, 'soft', 1],
-      ['Time Management', 90, 'soft', 2],
+      ['Time Management', 92, 'soft', 2],
       ['Photography', 90, 'technical', 3],
       ['Leadership', 88, 'soft', 4],
       ['Problem Solving', 85, 'soft', 5],
@@ -108,12 +119,12 @@ async function seed() {
       ['Human Resource', 80, 'soft', 7],
       ['English (Fluent)', 95, 'language', 8],
       ['Spanish (Intermediate)', 65, 'language', 9],
-      ['Indonesian (Native)', 100, 'language', 10],
+      ['Indonesian (Fluent)', 100, 'language', 10],
     ];
     for (const s of skillData) {
       await db.execute('INSERT INTO skills (name, level, category, sort_order) VALUES (?, ?, ?, ?)', s);
     }
-    console.log('✅ Skills updated (Progress Bars ready)');
+    console.log('✅ Skills updated');
 
     // ── FAQs ────────────────────────────────────────────────────────────
     await db.execute('DELETE FROM faqs');
@@ -128,6 +139,18 @@ async function seed() {
       await db.execute('INSERT INTO faqs (question, answer, sort_order) VALUES (?, ?, ?)', f);
     }
     console.log('✅ FAQs seeded');
+
+    // ── Stats ───────────────────────────────────────────────────────────
+    await db.execute('DELETE FROM stats');
+    const statsData = [
+      ['Projects Completed', 140, '+', 'CheckCircle', 1],
+      ['Active Years', 2, '+', 'Clock', 2],
+      ['Client Satisfaction', 100, '%', 'Star', 3],
+    ];
+    for (const st of statsData) {
+      await db.execute('INSERT INTO stats (label, value, suffix, icon, sort_order) VALUES (?, ?, ?, ?, ?)', st);
+    }
+    console.log('✅ Stats seeded');
 
     console.log('\n🎉 MySQL Database seeding complete with full CV data!\n');
     process.exit(0);

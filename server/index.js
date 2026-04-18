@@ -2,6 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const db = require('./db');
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -12,7 +14,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Static uploads
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+const uploadDir = path.join(__dirname, 'uploads');
+app.use('/uploads', express.static(uploadDir));
 
 // Serve frontend in production
 const distPath = path.join(__dirname, '..', 'dist');
@@ -49,7 +52,12 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500).json({ error: 'server_error', message: err.message || 'Internal server error' });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`\n🚀 Hayden Portfolio API running on http://localhost:${PORT}`);
   console.log(`   Health: http://localhost:${PORT}/api/health\n`);
+  
+  // Initialize Database
+  if (db.initDB) {
+    await db.initDB();
+  }
 });

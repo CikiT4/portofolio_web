@@ -8,9 +8,12 @@ import AdminDashboard from './pages/AdminDashboard';
 import CursorGlow from './components/CursorGlow';
 
 function ProtectedRoute({ children }) {
-  const { token } = useAuth();
-  return token ? children : <Navigate to="/admin/login" replace />;
+  const { token, user } = useAuth();
+  if (!token) return <Navigate to="/admin/login" replace />;
+  if (user?.role !== 'admin') return <Navigate to="/" replace />;
+  return children;
 }
+
 
 export default function App() {
   return (

@@ -1,27 +1,62 @@
 const mysql = require('mysql2/promise');
-require('dotenv').config();
+const path = require('path');
+
+require('dotenv').config({ path: path.join(__dirname, '.env') });
+
 
 let connectionConfig;
 
-// If we have a MYSQL_URL but it looks like a Railway internal address and we are running locally, 
-// fallback to the individual variables.
-if (process.env.MYSQL_URL && !process.env.MYSQL_URL.includes('railway.internal')) {
+// Priority:
+// 1. MYSQL_PUBLIC_URL (Preferred for external connectivity/local dev)
+// 2. MYSQL_URL (Railway Internal URL)
+// 3. Falling back to individual DB_* env vars
+if (process.env.DB_HOST && process.env.DB_PASSWORD) {
+  console.log('🏠 Using individual DB environment variables');
+  connectionConfig = {
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME || 'railway',
+    port: process.env.DB_PORT || 3306,
+  };
+} else if (process.env.MYSQL_PUBLIC_URL) {
+  console.log('🌍 Using Railway Public URL');
+  connectionConfig = process.env.MYSQL_PUBLIC_URL;
+} else if (process.env.MYSQL_URL) {
+  console.log('🔗 Using Railway Internal URL');
   connectionConfig = process.env.MYSQL_URL;
 } else {
   connectionConfig = {
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'porto_web',
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    database: 'railway',
   };
 }
+
+
 
 const pool = mysql.createPool(connectionConfig);
 
 // Initialize database tables if they don't exist
 async function initDB() {
   try {
-    console.log('⏳ Connecting to MySQL and initializing tables...');
+    console.log('⏳ Connecting to MySQL server...');
+    
+    // First connection without a database to ensure the database exists
+    const tempConn = await mysql.createConnection({
+      host: connectionConfig.host || (typeof connectionConfig === 'string' ? '' : 'localhost'),
+      user: connectionConfig.user || 'root',
+      password: connectionConfig.password || '',
+      uri: typeof connectionConfig === 'string' ? connectionConfig : undefined
+    });
+    
+    const dbName = process.env.DB_NAME || process.env.MYSQLDATABASE || 'railway';
+    await tempConn.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\``);
+    await tempConn.end();
+    console.log(`✅ Database "${dbName}" verified/created.`);
+
+    console.log('⏳ Initializing tables...');
     
     // Create tables
     await pool.query(`
@@ -33,6 +68,7 @@ async function initDB() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
+
 
     await pool.query(`
       CREATE TABLE IF NOT EXISTS hero (

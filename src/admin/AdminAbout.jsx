@@ -61,8 +61,9 @@ export default function AdminAbout() {
           <label className="block font-mono text-xs tracking-widest text-ink-500 uppercase mb-2">Profile Picture</label>
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
             {form.photo_url && (
-              <img src={form.photo_url.startsWith('http') ? form.photo_url : `http://localhost:5000${form.photo_url}`} alt="Preview" className="w-20 h-20 rounded-xl object-cover bg-ink-900 border border-ink-700" />
+              <img src={form.photo_url} alt="Preview" className="w-20 h-20 rounded-xl object-cover bg-ink-900 border border-ink-700" />
             )}
+
             <div className="flex-1 w-full space-y-2">
               <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleFileUpload} />
               <button type="button" onClick={() => fileInputRef.current?.click()} className="flex items-center justify-center gap-2 admin-btn-secondary w-full sm:w-auto">
