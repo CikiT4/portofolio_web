@@ -13,7 +13,7 @@ router.put('/', auth, (req, res) => {
   const { name, role, bio, email, phone, instagram, location, photo_url } = req.body;
   const existing = db.prepare('SELECT id FROM about LIMIT 1').get();
   if (existing) {
-    db.prepare('UPDATE about SET name=?, role=?, bio=?, email=?, phone=?, instagram=?, location=?, photo_url=?, updated_at=datetime("now") WHERE id=?')
+    db.prepare('UPDATE about SET name=?, role=?, bio=?, email=?, phone=?, instagram=?, location=?, photo_url=?, updated_at=datetime(\'now\') WHERE id=?')
       .run(name, role, bio, email, phone, instagram, location, photo_url, existing.id);
   } else {
     db.prepare('INSERT INTO about (name, role, bio, email, phone, instagram, location, photo_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').run(name, role, bio, email, phone, instagram, location, photo_url);

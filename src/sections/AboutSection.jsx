@@ -63,9 +63,7 @@ export default function AboutSection() {
             <div className="space-y-6">
               <div>
                 <h2 className="font-display text-4xl md:text-5xl font-light text-ink-100 mb-2">
-                  {about?.name || 'Hayden Novariyo'}
-                  <br />
-                  <span className="italic text-gold/80">Wira Alfisyahr</span>
+                  {about?.name || 'Hayden Novariyo Wira Alfisyahr'}
                 </h2>
                 <p className="font-mono text-xs tracking-widest text-ink-500 uppercase mt-2">
                   {about?.role || 'Event Organizer & Creative Technologist'}

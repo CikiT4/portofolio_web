@@ -13,7 +13,7 @@ router.put('/', auth, (req, res) => {
   const { title, subtitle, tagline, cta_text } = req.body;
   const existing = db.prepare('SELECT id FROM hero LIMIT 1').get();
   if (existing) {
-    db.prepare('UPDATE hero SET title=?, subtitle=?, tagline=?, cta_text=?, updated_at=datetime("now") WHERE id=?')
+    db.prepare('UPDATE hero SET title=?, subtitle=?, tagline=?, cta_text=?, updated_at=datetime(\'now\') WHERE id=?')
       .run(title, subtitle, tagline, cta_text, existing.id);
   } else {
     db.prepare('INSERT INTO hero (title, subtitle, tagline, cta_text) VALUES (?, ?, ?, ?)').run(title, subtitle, tagline, cta_text);

@@ -6,7 +6,7 @@ export default function HeroSection() {
   const [hero, setHero] = useState(null);
 
   useEffect(() => {
-    api.get('/hero').then(r => setHero(r.data)).catch(() => {});
+    api.get('/hero').then(r => setHero(r.data)).catch(() => { });
   }, []);
 
   const scrollDown = () => {
@@ -47,9 +47,7 @@ export default function HeroSection() {
 
         {/* Name */}
         <h1 className="animate-on-load delay-200 font-display text-5xl md:text-7xl lg:text-8xl font-light text-ink-100 leading-[1.05] mb-6">
-          {hero?.title || 'Hayden Novariyo'}
-          <br />
-          <span className="italic text-gold/90">Wira Alfisyahr</span>
+          {hero?.title || 'Hayden Novariyo Wira Alfisyahr'}
         </h1>
 
         {/* Subtitle */}
