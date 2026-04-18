@@ -3,6 +3,7 @@ import { Menu, X, Lock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const NAV_LINKS = [
+  { label: 'Home', href: '#home' },
   { label: 'About', href: '#about' },
   { label: 'Experience', href: '#experience' },
   { label: 'Services', href: '#services' },
@@ -40,8 +41,8 @@ export default function Navbar() {
       <nav className="max-w-6xl mx-auto px-6 flex items-center justify-between" aria-label="Main navigation">
         {/* Logo */}
         <a
-          href="#hero"
-          onClick={(e) => handleNavClick(e, '#hero')}
+          href="#home"
+          onClick={(e) => handleNavClick(e, '#home')}
           className="font-display text-lg text-ink-100 hover:text-gold transition-colors duration-200"
         >
           <span className="text-gold">H</span>ayden

@@ -18,7 +18,7 @@ import AdminFaqs from '../admin/AdminFaqs';
 import AdminMessages from '../admin/AdminMessages';
 
 const TABS = [
-  { key: 'hero', label: 'Hero', icon: Home, component: AdminHero },
+  { key: 'hero', label: 'Home', icon: Home, component: AdminHero },
   { key: 'about', label: 'About', icon: User, component: AdminAbout },
   { key: 'experiences', label: 'Experience', icon: Briefcase, component: AdminExperiences },
   { key: 'services', label: 'Services', icon: Star, component: AdminServices },
