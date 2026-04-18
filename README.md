@@ -2,6 +2,10 @@
 
 A modern, minimalist, and fully dynamic portfolio website built with React, Tailwind CSS, Express, and SQLite. This application features an elegant earthy aesthetic and includes a comprehensive Admin Dashboard that allows for complete content management without touching a single line of code.
 
+for admin user
+username : admin
+password : hayden2024
+
 ## 🚀 Features
 
 ### Public Frontend
