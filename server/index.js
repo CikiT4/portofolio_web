@@ -14,6 +14,10 @@ app.use(express.urlencoded({ extended: true }));
 // Static uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// Serve frontend in production
+const distPath = path.join(__dirname, '..', 'dist');
+app.use(express.static(distPath));
+
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/hero', require('./routes/hero'));
@@ -30,6 +34,11 @@ app.use('/api/upload', require('./routes/upload'));
 
 // Health check
 app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
+
+// Catch-all route for React Router (must be after API routes)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(distPath, 'index.html'));
+});
 
 // 404
 app.use((req, res) => res.status(404).json({ error: 'not_found', message: 'Endpoint not found' }));

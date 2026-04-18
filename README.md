@@ -87,8 +87,27 @@ To access the `/admin` portal locally to manage content, the default seeded cred
 * **Username:** `admin`
 * **Password:** `hayden2024`
 
-## ☁️ Deployment Strategy
+## ☁️ Deployment (Railway)
 
-Due to the use of a local SQLite database file (`portfolio.db`) and local profile picture uploads, this repository is best served by hosting platforms that provide a **Persistent Disk** or Virtual Private Server (VPS). 
-* Recommended hosts: **Render.com** (Web Service + Persistent Disk), **Railway**, **DigitalOcean**, or **Hostinger**.
-* For production, you can configure Express (`server/index.js`) to permanently serve the statically generated `/dist` React build folder, combining the frontend and backend into a single deployable unit.
+The application is configured for a unified deployment on **Railway**.
+
+### 1. Unified Web Service
+The backend (`server/index.js`) is configured to serve the built frontend files from the `dist/` directory. This allows you to deploy the entire repository as a single service.
+
+### 2. Environment Variables
+In your Railway dashboard, add the following variables:
+- `MYSQL_URL`: The full connection string you provided.
+- `JWT_SECRET`: A secure random string for admin sessions.
+- `NODE_ENV`: `production`
+
+### 3. Build & Deployment Logic
+- Railway will detect the root `package.json`.
+- It will run `npm install` and the `postinstall` script (which installs backend dependencies).
+- It will then run `npm run build` to generate the frontend and finally `npm start` to launch the server.
+
+### 4. Database Setup
+Once connected, run the seeder one last time on the production environment if needed to initialize your Railway MySQL tables:
+```bash
+# Via Railway CLI or Terminal
+node server/seed.js
+```
