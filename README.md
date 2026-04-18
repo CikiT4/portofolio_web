@@ -57,7 +57,7 @@ This is a Full-Stack application separated logically into two main directories i
 
 ### Backend
 * **Node.js & Express** - Efficient web server routing and handling.
-* **SQLite (better-sqlite3)** - Lightweight, file-based relational database that is highly performant.
+* **MySQL (better-sqlite3)** - Lightweight, file-based relational database that is highly performant.
 * **JWT (jsonwebtoken)** - Stateless authentication tokens for the admin dashboard.
 * **Multer** - Middleware for handling `multipart/form-data` during profile picture uploads. 
 
