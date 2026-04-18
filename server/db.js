@@ -10,7 +10,21 @@ let connectionConfig;
 // 1. MYSQL_PUBLIC_URL (Preferred for external connectivity/local dev)
 // 2. MYSQL_URL (Railway Internal URL)
 // 3. Falling back to individual DB_* env vars
-if (process.env.DB_HOST && process.env.DB_PASSWORD) {
+// Priority:
+// 1. MYSQL_URL (Railway Internal URL - Best for Production)
+// 2. MYSQL_PUBLIC_URL (Railway External URL - Best for Local to Remote)
+// 3. Falling back to individual DB_* env vars (Local development)
+// Determine if we are running inside Railway
+const isRailway = process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_STATIC_URL;
+
+if (isRailway && process.env.MYSQL_URL) {
+  console.log('🔗 Using Railway Internal URL (Private)');
+  connectionConfig = process.env.MYSQL_URL;
+} else if (process.env.MYSQL_PUBLIC_URL) {
+  console.log('🌍 Using Railway Public URL (External)');
+  connectionConfig = process.env.MYSQL_PUBLIC_URL;
+} else if (process.env.DB_HOST && process.env.DB_PASSWORD) {
+
   console.log('🏠 Using individual DB environment variables');
   connectionConfig = {
     host: process.env.DB_HOST,
@@ -19,12 +33,6 @@ if (process.env.DB_HOST && process.env.DB_PASSWORD) {
     database: process.env.DB_NAME || 'railway',
     port: process.env.DB_PORT || 3306,
   };
-} else if (process.env.MYSQL_PUBLIC_URL) {
-  console.log('🌍 Using Railway Public URL');
-  connectionConfig = process.env.MYSQL_PUBLIC_URL;
-} else if (process.env.MYSQL_URL) {
-  console.log('🔗 Using Railway Internal URL');
-  connectionConfig = process.env.MYSQL_URL;
 } else {
   connectionConfig = {
     host: 'localhost',
@@ -33,6 +41,7 @@ if (process.env.DB_HOST && process.env.DB_PASSWORD) {
     database: 'railway',
   };
 }
+
 
 
 
