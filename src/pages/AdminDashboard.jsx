@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import AdminHero from '../admin/AdminHero';
 import AdminAbout from '../admin/AdminAbout';
+import AdminOverview from '../admin/AdminOverview';
 import AdminExperiences from '../admin/AdminExperiences';
 import AdminServices from '../admin/AdminServices';
 import AdminSkills from '../admin/AdminSkills';
@@ -18,6 +19,7 @@ import AdminFaqs from '../admin/AdminFaqs';
 import AdminMessages from '../admin/AdminMessages';
 
 const TABS = [
+  { key: 'overview', label: 'Overview', icon: Zap, component: AdminOverview },
   { key: 'hero', label: 'Home', icon: Home, component: AdminHero },
   { key: 'about', label: 'About', icon: User, component: AdminAbout },
   { key: 'experiences', label: 'Experience', icon: Briefcase, component: AdminExperiences },
@@ -33,7 +35,7 @@ const TABS = [
 export default function AdminDashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('hero');
+  const [activeTab, setActiveTab] = useState('overview');
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const handleLogout = () => {

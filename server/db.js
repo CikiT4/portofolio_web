@@ -1,12 +1,20 @@
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
-const connectionConfig = process.env.MYSQL_URL || {
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'porto_web',
-};
+let connectionConfig;
+
+// If we have a MYSQL_URL but it looks like a Railway internal address and we are running locally, 
+// fallback to the individual variables.
+if (process.env.MYSQL_URL && !process.env.MYSQL_URL.includes('railway.internal')) {
+  connectionConfig = process.env.MYSQL_URL;
+} else {
+  connectionConfig = {
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'porto_web',
+  };
+}
 
 const pool = mysql.createPool(connectionConfig);
 
