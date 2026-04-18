@@ -1,135 +1,94 @@
-# Hayden Novariyo Portfolio
+# Hayden Novariyo - Dynamic Portfolio Website
 
-A full-stack portfolio website for **Hayden Novariyo Wira Alfisyahr** — Event Organizer, Content Creator & CS Student.
+A modern, minimalist, and fully dynamic portfolio website built with React, Tailwind CSS, Express, and SQLite. This application features an elegant earthy aesthetic and includes a comprehensive Admin Dashboard that allows for complete content management without touching a single line of code.
 
-## ✨ Features
+## 🚀 Features
 
-- **Public Portfolio** — Animated sections: Hero, About, Experience, Services, Skills, Stats, Education, Organizations, FAQ, Contact
-- **Admin Dashboard** — JWT-authenticated CRUD panel for all content
-- **REST API** — Express.js backend with SQLite database
-- **Animations** — IntersectionObserver scroll reveals, skill bar animations, stats counters, service modals
+### Public Frontend
+* **Dynamic Content:** Everything from the hero tagline to the about bio, experiences, skills, and FAQs are fetched dynamically from the database.
+* **Modern Aesthetic:** Clean, earthy neutral color palette featuring beige backgrounds, brown text, and subtle golden/rusty accents.
+* **Responsive Design:** Fully scaled and optimized for mobile, tablet, and desktop viewports using Tailwind CSS.
+* **Interactive Elements:** Micro-animations (via Lucide React icons), custom scrolling logic, and glowing hover states across the application.
+* **Direct Contact System:** Integrated "Send via WhatsApp" and "Send via Email" buttons that instantly compose pre-filled messages using native mail clients or WhatsApp Web/App.
 
-## 🗂 Project Structure
+### Admin Dashboard
+* **Secure Authentication:** Protected `/admin` routes using JWT (JSON Web Tokens) and bcrypt password hashing.
+* **Content Management System (CMS):** A multi-tab dashboard seamlessly managing Database CRUD operations for every single section of the portfolio.
+* **Image Uploading:** Integrated `multer` functionality allowing admins to securely upload and update custom profile pictures and assets on the fly.
+* **Clean UI:** Intuitive interface with toast notifications, loading states, and live-previews.
 
+## 📁 Project Structure
+
+This is a Full-Stack application separated logically into two main directories internally:
+
+```text
+/
+├── server/                     # Backend Node.js Environment
+│   ├── routes/                 # Express API endpoints for each section (hero, about, contact, upload, etc)
+│   ├── middleware/             # JWT Auth verification logic
+│   ├── uploads/                # Local storage for admin-uploaded images
+│   ├── db.js                   # SQLite database initialization and schema definitions
+│   ├── seed.js                 # Seeding script for default DB data & admin credentials
+│   └── index.js                # Core Express server configuration
+├── src/                        # Frontend React Environment
+│   ├── admin/                  # Admin Dashboard sub-components and management views
+│   ├── components/             # Reusable UI elements (Navbar, Footer, RevealWrappers)
+│   ├── context/                # React Context for global auth state management
+│   ├── hooks/                  # Custom Axios hooks (useApi)
+│   ├── pages/                  # Top-level page views (PublicPortfolio, AdminDashboard, Login)
+│   ├── sections/               # Public portfolio view components (HeroSection, AboutSection, etc)
+│   ├── App.jsx                 # Application entry and React Router architecture
+│   └── main.jsx                # DOM rendering
+├── index.html                  # Core HTML file
+├── index.css                   # Global CSS, utilities, and aesthetic overrides
+├── tailwind.config.js          # Tailwind theme, typography, and color configurations
+└── vite.config.js              # Vite bundler and API proxy settings
 ```
-porto/
-├── index.html          # Vite HTML entry
-├── index.css           # Global Tailwind styles
-├── main.jsx            # React root
-├── src/
-│   ├── App.jsx                 # React Router
-│   ├── context/AuthContext.jsx # JWT auth state
-│   ├── hooks/
-│   │   ├── useApi.js           # Axios instance
-│   │   └── useScrollReveal.js  # IntersectionObserver hook
-│   ├── pages/
-│   │   ├── PublicPortfolio.jsx # Public page
-│   │   ├── AdminLogin.jsx      # Login
-│   │   └── AdminDashboard.jsx  # Admin panel
-│   ├── sections/               # Portfolio sections (Hero, About, etc.)
-│   ├── admin/                  # Admin CRUD panels
-│   └── components/             # Reusable components
-└── server/
-    ├── index.js        # Express app
-    ├── db.js           # SQLite schema
-    ├── seed.js         # CV data seeder
-    ├── middleware/     # Auth + rate-limit
-    └── routes/         # REST API endpoints
-```
 
-## 🚀 Quick Start
+## 🛠️ Tech Stack & Core Fundamentals
 
-### 1. Install Frontend Dependencies
+### Frontend
+* **React 18** - Core UI framework.
+* **Vite** - Lightning-fast build tool and development server.
+* **Tailwind CSS** - Utility-first styling framework used for the complete design system.
+* **React Router Dom** - Handling client-side navigation between public and admin routes.
+* **Lucide-React** - Lightweight SVG icon library.
+* **Axios** - For managing API requests to the backend server.
+
+### Backend
+* **Node.js & Express** - Efficient web server routing and handling.
+* **SQLite (better-sqlite3)** - Lightweight, file-based relational database that is highly performant.
+* **JWT (jsonwebtoken)** - Stateless authentication tokens for the admin dashboard.
+* **Multer** - Middleware for handling `multipart/form-data` during profile picture uploads. 
+
+## 💻 Local Development Workflow
+
+To work on this project locally, you must run both the backend Express server and the frontend Vite development server concurrently.
+
+### 1. Start the Backend Server
+Open a terminal and navigate to the `server` directory:
 ```bash
-cd porto
+cd server
 npm install
-```
-
-### 2. Install Backend Dependencies
-```bash
-cd porto/server
-npm install
-```
-
-### 3. Seed the Database
-```bash
-cd porto/server
-node seed.js
-```
-
-### 4. Start the Backend (Terminal 1)
-```bash
-cd porto/server
-npm start
-# Or use nodemon for dev:
-# npx nodemon index.js
-```
-
-### 5. Start the Frontend (Terminal 2)
-```bash
-cd porto
 npm run dev
 ```
+*(The backend will run on `http://localhost:5000`)*
 
-### 6. Open in Browser
-- **Portfolio**: http://localhost:5173
-- **Admin Login**: http://localhost:5173/admin/login
-- **API Health**: http://localhost:5000/api/health
-
-## 🔑 Admin Credentials
-| Field | Value |
-|-------|-------|
-| Username | `admin` |
-| Password | `hayden2024` |
-
-## 🛠 Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 18 + Vite |
-| Styling | Tailwind CSS v3 |
-| Animations | CSS keyframes + IntersectionObserver + Framer Motion |
-| Backend | Node.js + Express |
-| Database | SQLite (via better-sqlite3) |
-| Auth | JWT (jsonwebtoken) + bcryptjs |
-
-## 📡 API Endpoints
-
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| POST | `/api/auth/login` | — | Get JWT token |
-| GET | `/api/hero` | — | Hero content |
-| PUT | `/api/hero` | Admin | Update hero |
-| GET | `/api/about` | — | About content |
-| PUT | `/api/about` | Admin | Update about |
-| GET/POST/PUT/DELETE | `/api/experiences` | GET: public | Experience CRUD |
-| GET/POST/PUT/DELETE | `/api/services` | GET: public | Services CRUD |
-| GET/POST/PUT/DELETE | `/api/skills` | GET: public | Skills CRUD |
-| GET/POST/PUT/DELETE | `/api/stats` | GET: public | Stats CRUD |
-| GET/POST/PUT/DELETE | `/api/education` | GET: public | Education CRUD |
-| GET/POST/PUT/DELETE | `/api/organizations` | GET: public | Organizations CRUD |
-| GET/POST/PUT/DELETE | `/api/faqs` | GET: public | FAQs CRUD |
-| POST | `/api/contact` | — | Submit contact form |
-| GET/DELETE | `/api/contact` | Admin | Manage messages |
-
-## 🎨 Design System
-
-- **Background**: `#080808` (ink-950)
-- **Text**: `#E8E8E8` (ink-100)
-- **Accent**: `#C9A84C` (gold)
-- **Fonts**: Cormorant Garamond (display) + DM Sans (body) + JetBrains Mono (labels)
-
-## 🌐 Repository Setup
-
+### 2. Start the Frontend Server
+Open a new, separate terminal at the root directory:
 ```bash
-# Initialize git repo (from porto/ directory)
-git init
-git add .
-git commit -m "feat: initial portfolio site for Hayden Novariyo"
-git remote add origin https://github.com/yourusername/hayden-portfolio.git
-git push -u origin main
+npm install
+npm run dev
 ```
+*(The frontend will run on `http://localhost:5173`. Vite is configured to proxy all `/api` requests to port 5000 automatically).*
 
----
+### Admin Credentials
+To access the `/admin` portal locally to manage content, the default seeded credentials are:
+* **Username:** `admin`
+* **Password:** `hayden2024`
 
-*Built with ❤️ for Hayden Novariyo Wira Alfisyahr*
+## ☁️ Deployment Strategy
+
+Due to the use of a local SQLite database file (`portfolio.db`) and local profile picture uploads, this repository is best served by hosting platforms that provide a **Persistent Disk** or Virtual Private Server (VPS). 
+* Recommended hosts: **Render.com** (Web Service + Persistent Disk), **Railway**, **DigitalOcean**, or **Hostinger**.
+* For production, you can configure Express (`server/index.js`) to permanently serve the statically generated `/dist` React build folder, combining the frontend and backend into a single deployable unit.
